@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }) => {
       setToken(data.token);
       setIsAdmin(data.user.is_admin);
       localStorage.setItem("auction_token", token);
+      setLoginErrors(null);
     } catch (err) {
       // console.log(err.response);
       setLoginErrors(err.response.data);
@@ -55,6 +56,8 @@ export const AuthProvider = ({ children }) => {
       setLoginErrors(err.response.data);
     }
 
+    setLoginErrors(null);
+
     navigate("/login");
   };
 
@@ -67,6 +70,8 @@ export const AuthProvider = ({ children }) => {
     setPassword,
     loginErrors,
     user,
+    setLoginErrors,
+    navigate,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

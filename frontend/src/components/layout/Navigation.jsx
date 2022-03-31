@@ -11,7 +11,6 @@ import useAuth from "../../hooks/useAuth";
 
 const Navigation = () => {
   const { token, onLogout, isAdmin } = useAuth();
-  console.log("navigacija");
   return (
     <>
       <Navbar bg="light" variant="light">

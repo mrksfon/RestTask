@@ -17,7 +17,6 @@ class AuctionItemFactory extends Factory
             'name' => $this->faker->name(),
             'description' => $this->faker->words(15, true),
             'auction_start' => $this->faker->dateTimeBetween(now(), now()->addDays(4)),
-            'duration' => rand(0, 60)
         ];
     }
 }
