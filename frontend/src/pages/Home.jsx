@@ -1,7 +1,11 @@
 import React from "react";
 
 const Home = () => {
-  return <h3>Home page </h3>;
+  return (
+    <div>
+      <h1 style={{ textAlign: "center" }}>Come to Auction</h1>
+    </div>
+  );
 };
 
 export default Home;

@@ -1,3 +1,4 @@
+import axios from "axios";
 import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -7,20 +8,54 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+  const [loginErrors, setLoginErrors] = useState(null);
 
   const handleLogin = async () => {
-    const token = await fakeAuth();
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/login", {
+        email: email,
+        password: password,
+      });
 
-    setToken(token);
-    setIsAdmin(true);
-    console.log("usao ovde");
+      const { data } = response;
+
+      setUser(data.user);
+      setToken(data.token);
+      setIsAdmin(data.user.is_admin);
+      localStorage.setItem("auction_token", token);
+    } catch (err) {
+      // console.log(err.response);
+      setLoginErrors(err.response.data);
+    }
 
     navigate("/dashboard");
   };
 
-  const handleLogout = () => {
-    setToken(null);
+  const handleLogout = async () => {
+    try {
+      const config = {
+        headers: { Authorization: `Bearer ${token}` },
+      };
+
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/logout",
+        null,
+        config
+      );
+
+      setUser(null);
+      setIsAdmin(false);
+      setToken(null);
+    } catch (err) {
+      // console.log(err.response);
+      setLoginErrors(err.response.data);
+    }
+
+    navigate("/login");
   };
 
   const value = {
@@ -28,15 +63,14 @@ export const AuthProvider = ({ children }) => {
     onLogin: handleLogin,
     onLogout: handleLogout,
     isAdmin,
+    setEmail,
+    setPassword,
+    loginErrors,
+    user,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-const fakeAuth = () =>
-  new Promise((resolve) => {
-    setTimeout(() => resolve("2342f2f1d131rf12"), 250);
-  });
 
 export default function useAuth() {
   return useContext(AuthContext);

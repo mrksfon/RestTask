@@ -7,7 +7,6 @@ const App = () => {
   return (
     <>
       <AuthProvider>
-        <h1>React Router</h1>
         <Navigation />
         <Router />
       </AuthProvider>
