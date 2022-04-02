@@ -14,6 +14,6 @@ class AuctionItemSeeder extends Seeder
      */
     public function run()
     {
-        AuctionItem::factory()->count(20)->create();
+        AuctionItem::factory()->count(200)->create();
     }
 }

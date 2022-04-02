@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   useTable,
   useSortBy,
@@ -13,7 +13,8 @@ import useAuth from "../../hooks/useAuth";
 import BidNowButton from "./BidNowButton";
 import EditButton from "./EditButton";
 import DeleteModal from "./DeleteModal";
-import { Button } from "react-bootstrap";
+import axios from "axios";
+import { tableHeaders } from "../../constants/helpers";
 
 const DefaultColumnFilter = ({
   column: { filterValue, preFilteredRows, setFilter },
@@ -165,7 +166,7 @@ const filterGreaterThan = (rows, id, filterValue) => {
 
 filterGreaterThan.autoRemove = (val) => typeof val !== "number";
 
-const Table = ({ columns, data }) => {
+const Table = ({ data, columns }) => {
   const filterTypes = React.useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
@@ -232,11 +233,11 @@ const Table = ({ columns, data }) => {
     // useGlobalFilter!
   );
 
-  const { isAdmin } = useAuth();
-
   // We don't want to render all of the rows for this example, so cap
   // it for this use case
   const firstPageRows = rows.slice(0, 20);
+
+  const { isAdmin } = useAuth();
 
   return (
     <>

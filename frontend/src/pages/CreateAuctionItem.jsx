@@ -40,6 +40,7 @@ const CreateAuctionItem = () => {
       setLoginErrors(null);
       navigate("/dashboard");
     } catch (err) {
+      // console.log(err.response);
       setLoginErrors(err.response.data);
     }
   };
