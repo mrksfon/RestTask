@@ -9,6 +9,11 @@ import {
   setGlobalFilter,
 } from "react-table";
 import { matchSorter } from "match-sorter";
+import useAuth from "../../hooks/useAuth";
+import BidNowButton from "./BidNowButton";
+import EditButton from "./EditButton";
+import DeleteModal from "./DeleteModal";
+import { Button } from "react-bootstrap";
 
 const DefaultColumnFilter = ({
   column: { filterValue, preFilteredRows, setFilter },
@@ -227,6 +232,8 @@ const Table = ({ columns, data }) => {
     // useGlobalFilter!
   );
 
+  const { isAdmin } = useAuth();
+
   // We don't want to render all of the rows for this example, so cap
   // it for this use case
   const firstPageRows = rows.slice(0, 20);
@@ -263,6 +270,15 @@ const Table = ({ columns, data }) => {
                   </span>
                 </th>
               ))}
+              <th style={{ borderTop: "1px solid black" }}>Action bid</th>
+              {isAdmin === 1 && (
+                <>
+                  <th style={{ borderTop: "1px solid black" }}>Edit auction</th>
+                  <th style={{ borderTop: "1px solid black" }}>
+                    Delete auction
+                  </th>
+                </>
+              )}
             </tr>
           ))}
           <tr>
@@ -284,6 +300,19 @@ const Table = ({ columns, data }) => {
                     <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                   );
                 })}
+                <td style={{ borderTop: "1px solid black" }}>
+                  <BidNowButton id={row.original.id} />
+                </td>
+                {isAdmin === 1 && (
+                  <>
+                    <td style={{ borderTop: "1px solid black" }}>
+                      <EditButton id={row.original.id} />
+                    </td>
+                    <td style={{ borderTop: "1px solid black" }}>
+                      <DeleteModal id={row.original.id} />
+                    </td>
+                  </>
+                )}
               </tr>
             );
           })}

@@ -12,9 +12,11 @@ import {
 } from "../constants/routes";
 import useAuth from "../hooks/useAuth";
 import AuctionItemShow from "../pages/AuctionItemShow";
+import BidNow from "../pages/BidNow";
 import Configuration from "../pages/Configuration";
 import CreateAuctionItem from "../pages/CreateAuctionItem";
 import Dashboard from "../pages/Dashboard";
+import EditAuctionItem from "../pages/EditAuctionItem";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Nomatch from "../pages/Nomatch";
@@ -72,10 +74,26 @@ const Router = () => {
         }
       />
       <Route
+        path={SHOW_AUCTION_ITEM}
+        element={
+          <ProtectedRoute>
+            <BidNow />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path={CREATE_AUCTION_ITEM}
         element={
           <ProtectedRouteAdmin>
             <CreateAuctionItem />
+          </ProtectedRouteAdmin>
+        }
+      />
+      <Route
+        path={EDIT_AUCTION_ITEM}
+        element={
+          <ProtectedRouteAdmin>
+            <EditAuctionItem />
           </ProtectedRouteAdmin>
         }
       />

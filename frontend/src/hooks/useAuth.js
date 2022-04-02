@@ -29,7 +29,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("auction_token", token);
       setLoginErrors(null);
     } catch (err) {
-      // console.log(err.response);
       setLoginErrors(err.response.data);
     }
 
@@ -52,7 +51,6 @@ export const AuthProvider = ({ children }) => {
       setIsAdmin(false);
       setToken(null);
     } catch (err) {
-      // console.log(err.response);
       setLoginErrors(err.response.data);
     }
 

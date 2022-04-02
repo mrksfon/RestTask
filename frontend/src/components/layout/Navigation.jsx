@@ -61,7 +61,7 @@ const Navigation = () => {
                   </NavLink>
                 </Navbar.Brand>
 
-                {isAdmin && (
+                {isAdmin === true && (
                   <Navbar.Brand>
                     <NavLink
                       to={CREATE_AUCTION_ITEM}

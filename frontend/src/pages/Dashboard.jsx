@@ -19,12 +19,9 @@ const Dashboard = () => {
           "http://127.0.0.1:8000/api/auction_items",
           config
         );
-        // console.log(response);
         setLoginErrors(null);
-        console.log(response);
         setAuctionItems(response.data);
       } catch (err) {
-        // console.log(err.response);
         setLoginErrors(err.response.data);
       }
     };
