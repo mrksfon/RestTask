@@ -21,7 +21,7 @@ const Dashboard = () => {
         );
         // console.log(response);
         setLoginErrors(null);
-        console.log(response);
+        // console.log(response);
         setAuctionItems(response.data);
       } catch (err) {
         // console.log(err.response);
