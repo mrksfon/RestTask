@@ -64,14 +64,12 @@ class AuctionItemController extends Controller
             'name' => 'required',
             'description' => 'required',
             'auction_start' => 'required',
-            'duration' => 'required'
         ]);
 
         return $auctionItem->update([
             'name' => $request->name,
             'description' => $request->description,
             'auction_start' => $request->auction_start,
-            'duration' => $request->duration
         ]);
     }
 
