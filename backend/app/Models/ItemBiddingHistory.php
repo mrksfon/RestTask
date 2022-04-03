@@ -13,9 +13,16 @@ class ItemBiddingHistory extends Model
     protected $table = 'item_bidding_history';
     public $timestamps = true;
 
+    protected $with = ['user'];
+
     protected $fillable = [
         'auction_item_id',
         'user_id',
         'bid_amount',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

@@ -1,23 +1,25 @@
 import axios from "axios";
-import Echo from "laravel-echo";
 import React, { useEffect, useState } from "react";
-import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Modal, Row } from "react-bootstrap";
 import Countdown from "react-countdown";
 import { useParams } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import Pusher from "pusher-js";
+import ItemBidHistoryModal from "../components/layout/ItemBidHistoryModal";
+
 const BidNow = () => {
   const { id } = useParams();
 
-  const { token, user } = useAuth();
+  const { token, user, isAdmin } = useAuth();
 
   const [item, setItem] = useState({});
   const [bidErrors, setBidErrors] = useState(null);
   const [timeLeft, setTimeLeft] = useState("");
   const [currentBidAmount, setCurrentBidAmount] = useState("");
   const [currentUserBidAmount, setCurrentUserBidAmount] = useState("");
-  const [marko, setMarko] = useState("");
   const [message, setMessage] = useState("");
+  const [itemBidHistory, setItemBidHistory] = useState([]);
+  const [itemBidHistoryErrors, setItemBidHistoryErrors] = useState({});
 
   const config = {
     headers: { Authorization: `Bearer ${token}` },
@@ -38,6 +40,16 @@ const BidNow = () => {
       }
     };
 
+    const fetchBidHistoryData = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/item_bidding_history/${id}`,
+          config
+        );
+        setItemBidHistory(response.data);
+      } catch (err) {}
+    };
+
     const fetchBidData = async () => {
       try {
         const response = await axios.get(
@@ -47,13 +59,12 @@ const BidNow = () => {
         setBidErrors(null);
         setCurrentBidAmount(response.data.auction_item_last_bid);
         setCurrentUserBidAmount(response.data.user_last_bid);
-      } catch (err) {
-        // setBidErrors(err.response.data);
-      }
+      } catch (err) {}
     };
 
     fetchData();
     fetchBidData();
+    fetchBidHistoryData();
 
     const pusher = new Pusher("1a439697d7e76e04d5eb", {
       cluster: "eu",
@@ -62,23 +73,25 @@ const BidNow = () => {
     let channel = pusher.subscribe(`auction_item_${id}`);
 
     channel.bind(`auction_item_${id}`, (data) => {
-      console.log(data);
-      if (user.id == data.data.user_id) {
-        if (data.data.hasOwnProperty("message")) {
-          setMessage(data.data.message);
-          console.log(user);
-        }
-        if (data.data.hasOwnProperty("item_bidding_history")) {
-          setCurrentUserBidAmount(data.data.item_bidding_history.bid_amount);
-        }
+      if (data.data.hasOwnProperty("message") && user.id == data.data.user_id) {
+        setMessage(data.data.message);
       }
-
+      if (
+        data.data.hasOwnProperty("item_bidding_history") &&
+        user.id == data.data.item_bidding_history.user_id
+      ) {
+        setCurrentUserBidAmount(data.data.item_bidding_history.bid_amount);
+        setMessage("");
+      }
       if (data.data.hasOwnProperty("item_bidding_history")) {
         setCurrentBidAmount(data.data.item_bidding_history.bid_amount);
+        console.log("ima");
+        setItemBidHistory((prevItemBidHistory) => [
+          ...prevItemBidHistory,
+          data.data.item_bidding_history,
+        ]);
       }
     });
-
-    // let channel = pusher.subscribe(`auction_item${id}`);
   }, []);
 
   const handleBid = async () => {
@@ -91,21 +104,7 @@ const BidNow = () => {
         },
         config
       );
-      const { data } = response;
-      setBidErrors(null);
-      if (
-        data.hasOwnProperty("auction_item_last_bid") &&
-        data.hasOwnProperty("user_last_bid")
-      ) {
-        setCurrentBidAmount(data.auction_item_last_bid);
-        setCurrentUserBidAmount(response.data.user_last_bid);
-        setMessage("");
-      } else if (data.hasOwnProperty("message")) {
-        setMessage(data.message);
-      }
-    } catch (err) {
-      // setBidErrors(err.response.data);
-    }
+    } catch (err) {}
   };
 
   return (
@@ -153,6 +152,9 @@ const BidNow = () => {
             </Row>
           </Card.Body>
         </Card>
+        {isAdmin === 1 && (
+          <ItemBidHistoryModal itemBidHistory={itemBidHistory} />
+        )}
       </Container>
     </>
   );

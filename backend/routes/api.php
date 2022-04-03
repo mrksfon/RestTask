@@ -22,6 +22,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/item_bidding_history/{id}/{user_id}', [ItemBiddingHistoryController::class, 'show']);
+    Route::get('/item_bidding_history/{id}', [ItemBiddingHistoryController::class, 'index']);
     Route::get('/auction_items', [AuctionItemController::class, 'index']);
     Route::get('/auction_items/{id}', [AuctionItemController::class, 'show']);
     Route::post('/logout', [AuthController::class, 'logout']);

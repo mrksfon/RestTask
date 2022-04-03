@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 
 class ItemBiddingHistoryController extends Controller
 {
+
+    public function index($id)
+    {
+        return ItemBiddingHistory::where('auction_item_id', $id)->where('user_id', '!=', -1)->with('user')->get();
+    }
+
     public function show($id, $user_id)
     {
         $itemBidHistoryLatest = ItemBiddingHistory::where('auction_item_id', $id)->latest()->first();

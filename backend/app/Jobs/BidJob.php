@@ -57,7 +57,8 @@ class BidJob implements ShouldQueue
             $itemBidHistoryUser = ItemBiddingHistory::create(['auction_item_id' => $this->auctionItemId, 'user_id' => $this->userId, 'bid_amount' => $newBidAmount]);
 
             $message = [
-                'item_bidding_history' => $itemBidHistoryUser
+                'item_bidding_history' => $itemBidHistoryUser,
+                'user' => $itemBidHistoryUser->user,
             ];
         }
 
