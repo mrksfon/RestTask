@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Settings;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -14,6 +15,10 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        User::factory()->count(30)->create();
+        $users = User::factory()->count(30)->create();
+
+        foreach ($users as $user) {
+            Settings::create(['user_id' => $user->id, 'maximum_bid_amount' => 0, 'bid_alert_notification' => 0]);
+        }
     }
 }

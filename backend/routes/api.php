@@ -4,6 +4,7 @@ use App\Http\Controllers\AuctionItemController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BidController;
 use App\Http\Controllers\ItemBiddingHistoryController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/auction_items/{id}', [AuctionItemController::class, 'show']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/bid', [BidController::class, 'bid']);
+    Route::get('/settings/users/{id}', [SettingsController::class, 'show']);
+    Route::post('/settings/{id}', [SettingsController::class, 'update']);
 
     Route::group(['middleware' => ['admin']], function () {
         Route::post('/auction_items', [AuctionItemController::class, 'store']);
