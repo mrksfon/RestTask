@@ -140,6 +140,10 @@ const BidNow = () => {
     } catch (err) {}
   };
 
+  if (currentUserBidAmount < currentBidAmount && autoBid.is_active) {
+    handleBid();
+  }
+
   return (
     <>
       <Container style={{ marginTop: "5px" }}>
