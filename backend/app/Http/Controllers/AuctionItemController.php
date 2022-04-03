@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AuctionItem;
+use App\Models\ItemBiddingHistory;
 use Illuminate\Http\Request;
 
 class AuctionItemController extends Controller
@@ -30,6 +31,8 @@ class AuctionItemController extends Controller
             'description' => 'required',
             'auction_start' => 'required',
         ]);
+
+        ItemBiddingHistory::create();
 
         return AuctionItem::create([
             'name' => $request->name,

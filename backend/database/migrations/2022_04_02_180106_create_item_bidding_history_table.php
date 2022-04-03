@@ -15,7 +15,7 @@ class CreateItemBiddingHistoryTable extends Migration
     {
         Schema::create('item_bidding_history', function (Blueprint $table) {
             $table->id();
-            $table->integer('latest_bid')->default(0);
+            $table->integer('bid_amount')->default(0);
             $table->integer('user_id')->default(-1);
             $table->integer('auction_item_id')->default(-1);
             $table->softDeletes();
