@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuctionItemController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AutoBidController;
 use App\Http\Controllers\BidController;
 use App\Http\Controllers\ItemBiddingHistoryController;
 use App\Http\Controllers\SettingsController;
@@ -30,6 +31,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/bid', [BidController::class, 'bid']);
     Route::get('/settings/users/{id}', [SettingsController::class, 'show']);
     Route::post('/settings/{id}', [SettingsController::class, 'update']);
+    Route::post('/auto_bid', [AutoBidController::class, 'store']);
+    Route::post('/auto_bid/users/{id}', [AutoBidController::class, 'update']);
+
+
 
     Route::group(['middleware' => ['admin']], function () {
         Route::post('/auction_items', [AuctionItemController::class, 'store']);
