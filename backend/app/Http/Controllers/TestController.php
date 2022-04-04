@@ -2,30 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuctionItem;
 use App\Models\AutoBid;
 use App\Models\ItemBiddingHistory;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class TestController extends Controller
 {
     public function index()
     {
-        $autoBidsForUser = AutoBid::where('user_id', 1)->where('is_active', 0)->get();
+        $item = AuctionItem::findOrFail(1);
 
-        if (count($autoBidsForUser)) {
-            dd('marko');
-        }
-
-        $items = ItemBiddingHistory::where('user_id', 1)->get()->pluck('auction_item_id')->unique();
-
-        $sum = 0;
-        foreach ($items as $item) {
-            $sum += ItemBiddingHistory::where('user_id', 1)->where('auction_item_id', $item)->get()->max('bid_amount');
-        }
-
-        dd($sum);
-
-        dd($items);
+        dd(now() >= Carbon::parse($item->auction_start));
     }
 }

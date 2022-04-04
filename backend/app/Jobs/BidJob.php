@@ -3,9 +3,11 @@
 namespace App\Jobs;
 
 use App\Events\BidEvent;
+use App\Models\AuctionItem;
 use App\Models\AutoBid;
 use App\Models\ItemBiddingHistory;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -43,29 +45,56 @@ class BidJob implements ShouldQueue, ShouldBeUnique
     {
         $message = [];
 
-        $itemBidHistoryCurrent = ItemBiddingHistory::where('auction_item_id', $this->auctionItemId)->latest()->first();
+        $auctionItem = AuctionItem::findOrFail($this->auctionItemId);
 
-        $flag = 0;
-
-
-        if ($itemBidHistoryCurrent->user_id == $this->userId) {
+        if (now() >= Carbon::parse($auctionItem->auction_start)) {
+            $auctionItem->update(['is_active' => false]);
+            $autoBids = AutoBid::where('auction_item_id', $this->auctionItemId)->get();
+            foreach ($autoBids as $bid) {
+                $bid->update(['is_active' => false]);
+            }
             $message = [
-                'message' => 'You cant bid against yourself!',
-                'user_id' => $this->userId,
+                'auction_end' => 'Auction for this item has ended'
             ];
-            $flag = 1;
-        }
+        } else {
+            $itemBidHistoryCurrent = ItemBiddingHistory::where('auction_item_id', $this->auctionItemId)->latest()->first();
+
+            $flag = 0;
+
+
+            if ($itemBidHistoryCurrent->user_id == $this->userId) {
+                $message = [
+                    'message' => 'You cant bid against yourself!',
+                    'user_id' => $this->userId,
+                ];
+                $flag = 1;
+            }
 
 
 
-        if ($flag == 0) {
+            if ($flag == 0) {
 
-            $newBidAmount = $itemBidHistoryCurrent->bid_amount + 1;
+                $newBidAmount = $itemBidHistoryCurrent->bid_amount + 1;
 
-            if ($this->requestType == 1) {
-                $hasFunds = $this->canUserAutoBid();
+                if ($this->requestType == 1) {
+                    $hasFunds = $this->canUserAutoBid();
 
-                if ($hasFunds) {
+                    if ($hasFunds) {
+                        $itemBidHistoryUser = ItemBiddingHistory::create(['auction_item_id' => $this->auctionItemId, 'user_id' => $this->userId, 'bid_amount' => $newBidAmount]);
+
+                        $message = [
+                            'item_bidding_history' => $itemBidHistoryUser,
+                            'user' => $itemBidHistoryUser->user,
+                            'request_type' => $this->requestType
+                        ];
+                    } else {
+                        $user = User::find($this->userId);
+                        $message = [
+                            'does_not_have_funds' => 'You are exciding the limit you provided in Settings',
+                            'user' => $user
+                        ];
+                    }
+                } else {
                     $itemBidHistoryUser = ItemBiddingHistory::create(['auction_item_id' => $this->auctionItemId, 'user_id' => $this->userId, 'bid_amount' => $newBidAmount]);
 
                     $message = [
@@ -73,21 +102,7 @@ class BidJob implements ShouldQueue, ShouldBeUnique
                         'user' => $itemBidHistoryUser->user,
                         'request_type' => $this->requestType
                     ];
-                } else {
-                    $user = User::find($this->userId);
-                    $message = [
-                        'does_not_have_funds' => 'You are exciding the limit you provided in Settings',
-                        'user' => $user
-                    ];
                 }
-            } else {
-                $itemBidHistoryUser = ItemBiddingHistory::create(['auction_item_id' => $this->auctionItemId, 'user_id' => $this->userId, 'bid_amount' => $newBidAmount]);
-
-                $message = [
-                    'item_bidding_history' => $itemBidHistoryUser,
-                    'user' => $itemBidHistoryUser->user,
-                    'request_type' => $this->requestType
-                ];
             }
         }
 

@@ -20,7 +20,7 @@ const BidNow = () => {
   const [message, setMessage] = useState("");
   const [itemBidHistory, setItemBidHistory] = useState([]);
   const [autoBid, setAutoBid] = useState(false);
-  const [request, setRequest] = useState(0);
+  const [auctionStatus, setAuctionStatus] = useState(true);
 
   const config = {
     headers: { Authorization: `Bearer ${token}` },
@@ -34,8 +34,10 @@ const BidNow = () => {
           config
         );
         setBidErrors(null);
+        console.log(response.data.is_active);
         setItem(response.data);
         setTimeLeft(response.data.formatted_date);
+        setAuctionStatus(response.data.is_active);
       } catch (err) {
         setBidErrors(err.response.data);
       }
@@ -93,6 +95,10 @@ const BidNow = () => {
 
     channel.bind(`auction_item_${id}`, (data) => {
       console.log(data);
+      if (data.data.hasOwnProperty("auction_end")) {
+        setMessage(data.data.auction_end);
+        setAuctionStatus(false);
+      }
       if (data.data.hasOwnProperty("message") && user.id == data.data.user_id) {
         setMessage(data.data.message);
       }
@@ -169,34 +175,43 @@ const BidNow = () => {
             </Card.Text>
 
             <Row>
-              <Col>
-                <Button
-                  variant="primary"
-                  style={{ width: "70%" }}
-                  type="button"
-                  onClick={handleBid}
-                >
-                  Bid
-                </Button>
-              </Col>
+              {auctionStatus === 1 && (
+                <Col>
+                  <Button
+                    variant="primary"
+                    style={{ width: "70%" }}
+                    type="button"
+                    onClick={handleBid}
+                  >
+                    Bid
+                  </Button>
+                </Col>
+              )}
 
               <Col>
-                <Card.Text>Current Bid : {currentBidAmount} $</Card.Text>
-              </Col>
-              <Col>
                 <Card.Text>
-                  Your latest Bid : {currentUserBidAmount} $
+                  {auctionStatus === true ? "Current Bid" : "Last bid"} :{" "}
+                  {currentBidAmount} $
                 </Card.Text>
               </Col>
-              <Col>
-                <Button
-                  variant={`${autoBid ? "success" : "primary"}`}
-                  style={{ width: "70%" }}
-                  onClick={handleSubmitAutoBid}
-                >
-                  Auto bid
-                </Button>
-              </Col>
+              {auctionStatus === 1 && (
+                <>
+                  <Col>
+                    <Card.Text>
+                      Your latest Bid : {currentUserBidAmount} $
+                    </Card.Text>
+                  </Col>
+                  <Col>
+                    <Button
+                      variant={`${autoBid ? "success" : "primary"}`}
+                      style={{ width: "70%" }}
+                      onClick={handleSubmitAutoBid}
+                    >
+                      Auto bid
+                    </Button>
+                  </Col>
+                </>
+              )}
               {message && (
                 <Card.Text style={{ marginTop: "5px", color: "red" }}>
                   {message}
