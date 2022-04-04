@@ -3,7 +3,9 @@
 namespace App\Jobs;
 
 use App\Events\BidEvent;
+use App\Models\AutoBid;
 use App\Models\ItemBiddingHistory;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,15 +21,17 @@ class BidJob implements ShouldQueue, ShouldBeUnique
 
     public $userId;
     public $auctionItemId;
+    public $requestType;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($userId, $auctionItemId)
+    public function __construct($userId, $auctionItemId, $requestType)
     {
         $this->userId = $userId;
         $this->auctionItemId = $auctionItemId;
+        $this->requestType = $requestType;
     }
 
     /**
@@ -52,17 +56,65 @@ class BidJob implements ShouldQueue, ShouldBeUnique
             $flag = 1;
         }
 
+
+
         if ($flag == 0) {
+
             $newBidAmount = $itemBidHistoryCurrent->bid_amount + 1;
 
-            $itemBidHistoryUser = ItemBiddingHistory::create(['auction_item_id' => $this->auctionItemId, 'user_id' => $this->userId, 'bid_amount' => $newBidAmount]);
+            if ($this->requestType == 1) {
+                $hasFunds = $this->canUserAutoBid();
 
-            $message = [
-                'item_bidding_history' => $itemBidHistoryUser,
-                'user' => $itemBidHistoryUser->user,
-            ];
+                if ($hasFunds) {
+                    $itemBidHistoryUser = ItemBiddingHistory::create(['auction_item_id' => $this->auctionItemId, 'user_id' => $this->userId, 'bid_amount' => $newBidAmount]);
+
+                    $message = [
+                        'item_bidding_history' => $itemBidHistoryUser,
+                        'user' => $itemBidHistoryUser->user,
+                        'request_type' => $this->requestType
+                    ];
+                } else {
+                    $user = User::find($this->userId);
+                    $message = [
+                        'does_not_have_funds' => 'You are exciding the limit you provided in Settings',
+                        'user' => $user
+                    ];
+                }
+            } else {
+                $itemBidHistoryUser = ItemBiddingHistory::create(['auction_item_id' => $this->auctionItemId, 'user_id' => $this->userId, 'bid_amount' => $newBidAmount]);
+
+                $message = [
+                    'item_bidding_history' => $itemBidHistoryUser,
+                    'user' => $itemBidHistoryUser->user,
+                    'request_type' => $this->requestType
+                ];
+            }
         }
 
         BidEvent::dispatch($message, $this->auctionItemId);
+    }
+
+    private function canUserAutoBid()
+    {
+        $user = User::findOrFail($this->userId);
+        $items = ItemBiddingHistory::where('user_id', $this->userId)->get()->pluck('auction_item_id')->unique();
+
+        $sum = 0;
+        foreach ($items as $item) {
+            $sum += ItemBiddingHistory::where('user_id', 1)->where('auction_item_id', $item)->get()->max('bid_amount');
+        }
+
+        $avalaibleFunds = $user->settings->maximum_bid_amount;
+
+        if ($avalaibleFunds < $sum + 1) {
+            $bids = AutoBid::where('user_id', $this->userId)->where('auction_item_id', $this->auctionItemId)->get();
+            foreach ($bids as $bid) {
+                $bid->update(['is_active' => 0]);
+            }
+
+            return false;
+        }
+
+        return true;
     }
 }

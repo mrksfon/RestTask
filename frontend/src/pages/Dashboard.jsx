@@ -4,7 +4,14 @@ import AuctionItemsTable from "../components/layout/AuctionItemsTable";
 import useAuth from "../hooks/useAuth";
 
 const Dashboard = () => {
-  const { token, setLoginErrors, loginErrors } = useAuth();
+  const {
+    token,
+    setLoginErrors,
+    loginErrors,
+    user,
+    setBidAmount,
+    setAlertNotification,
+  } = useAuth();
 
   const [auctionItems, setAuctionItems] = useState([]);
 
@@ -29,7 +36,25 @@ const Dashboard = () => {
       }
     };
 
+    const fetchDataSettings = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/settings/users/${user.id}`,
+          config
+        );
+
+        const { data } = response;
+        // console.log(data);
+        setBidAmount(data.maximum_bid_amount);
+        setAlertNotification(data.bid_alert_notification);
+        // setBidErrors(null);
+      } catch (err) {
+        // setBidErrors(err.response.data);
+      }
+    };
+
     fetchData();
+    fetchDataSettings();
   }, []);
 
   return (

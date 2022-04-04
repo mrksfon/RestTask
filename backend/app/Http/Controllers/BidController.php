@@ -10,6 +10,6 @@ class BidController extends Controller
 {
     public function bid(Request $request)
     {
-        dispatch(new BidJob($request->user_id, $request->auction_item_id));
+        dispatch(new BidJob($request->user_id, $request->auction_item_id, $request->request_type));
     }
 }

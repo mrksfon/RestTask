@@ -19,7 +19,8 @@ const BidNow = () => {
   const [currentUserBidAmount, setCurrentUserBidAmount] = useState("");
   const [message, setMessage] = useState("");
   const [itemBidHistory, setItemBidHistory] = useState([]);
-  const [autoBid, setAutoBid] = useState({});
+  const [autoBid, setAutoBid] = useState(false);
+  const [request, setRequest] = useState(0);
 
   const config = {
     headers: { Authorization: `Bearer ${token}` },
@@ -74,8 +75,8 @@ const BidNow = () => {
           config
         );
 
-        setAutoBid(response.data);
-        console.log(response.data);
+        setAutoBid(response.data.is_active);
+        // console.log(response.data);
       } catch (err) {}
     };
 
@@ -91,6 +92,7 @@ const BidNow = () => {
     let channel = pusher.subscribe(`auction_item_${id}`);
 
     channel.bind(`auction_item_${id}`, (data) => {
+      console.log(data);
       if (data.data.hasOwnProperty("message") && user.id == data.data.user_id) {
         setMessage(data.data.message);
       }
@@ -101,9 +103,15 @@ const BidNow = () => {
         setCurrentUserBidAmount(data.data.item_bidding_history.bid_amount);
         setMessage("");
       }
+      if (
+        data.data.hasOwnProperty("does_not_have_funds") &&
+        user.id == data.data.user.id
+      ) {
+        setMessage(data.data.does_not_have_funds);
+        setAutoBid(false);
+      }
       if (data.data.hasOwnProperty("item_bidding_history")) {
         setCurrentBidAmount(data.data.item_bidding_history.bid_amount);
-        console.log("ima");
         setItemBidHistory((prevItemBidHistory) => [
           ...prevItemBidHistory,
           data.data.item_bidding_history,
@@ -113,12 +121,16 @@ const BidNow = () => {
   }, []);
 
   const handleBid = async () => {
+    const requestType = autoBid ? "1" : "2";
+
+    // console.log(requestType);
     try {
       const response = await axios.post(
         "http://127.0.0.1:8000/api/bid",
         {
           user_id: user.id,
           auction_item_id: id,
+          request_type: requestType,
         },
         config
       );
@@ -136,11 +148,11 @@ const BidNow = () => {
         config
       );
       console.log(response.data);
-      setAutoBid(response.data);
+      setAutoBid(response.data.is_active);
     } catch (err) {}
   };
 
-  if (currentUserBidAmount < currentBidAmount && autoBid.is_active) {
+  if (currentUserBidAmount < currentBidAmount && autoBid) {
     handleBid();
   }
 
@@ -178,7 +190,7 @@ const BidNow = () => {
               </Col>
               <Col>
                 <Button
-                  variant={`${autoBid.is_active ? "success" : "primary"}`}
+                  variant={`${autoBid ? "success" : "primary"}`}
                   style={{ width: "70%" }}
                   onClick={handleSubmitAutoBid}
                 >

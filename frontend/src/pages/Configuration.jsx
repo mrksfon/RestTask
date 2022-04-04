@@ -4,7 +4,9 @@ import { Button, Container, Form } from "react-bootstrap";
 import useAuth from "../hooks/useAuth";
 
 const Configuration = () => {
-  const { token, user, navigate } = useAuth();
+  const { token, user, navigate, setBidAmount, setAlertNotification } =
+    useAuth();
+
   const [maximumBidAmount, setMaximumBidAmount] = useState(0);
   const [bidAlertNotification, setBidAlertNotification] = useState(0);
   const [bidErrors, setBidErrors] = useState(null);
@@ -22,7 +24,7 @@ const Configuration = () => {
         );
 
         const { data } = response;
-        console.log(data);
+        // console.log(data);
         setMaximumBidAmount(data.maximum_bid_amount);
         setBidAlertNotification(data.bid_alert_notification);
         setBidErrors(null);
@@ -49,6 +51,8 @@ const Configuration = () => {
         config
       );
       setBidErrors(null);
+      setBidAmount(maximumBidAmount);
+      setAlertNotification(bidAlertNotification);
       navigate("/dashboard");
     } catch (err) {
       // console.log(err.response);
