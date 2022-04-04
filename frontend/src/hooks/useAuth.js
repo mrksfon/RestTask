@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [loginErrors, setLoginErrors] = useState(null);
   const [bidAmount, setBidAmount] = useState(0);
   const [alertNotification, setAlertNotification] = useState(0);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const handleLogin = async () => {
     try {
@@ -74,6 +75,8 @@ export const AuthProvider = ({ children }) => {
     navigate,
     setBidAmount,
     setAlertNotification,
+    notificationCount,
+    setNotificationCount,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

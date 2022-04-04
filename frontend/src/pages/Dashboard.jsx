@@ -1,7 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import AlertNotification from "../components/layout/AlertNotification";
 import AuctionItemsTable from "../components/layout/AuctionItemsTable";
 import useAuth from "../hooks/useAuth";
+import Pusher from "pusher-js";
+import { ToastContainer } from "react-bootstrap";
 
 const Dashboard = () => {
   const {
@@ -11,7 +14,12 @@ const Dashboard = () => {
     user,
     setBidAmount,
     setAlertNotification,
+    setNotificationCount,
   } = useAuth();
+
+  const [userChannel, setUserChannel] = useState("");
+  const [message, setMessage] = useState(null);
+  const [show, setShow] = useState(false);
 
   const [auctionItems, setAuctionItems] = useState([]);
 
@@ -59,6 +67,7 @@ const Dashboard = () => {
 
   return (
     <>
+      {message != null && <AlertNotification />}
       <AuctionItemsTable auctionItems={auctionItems} />
       {loginErrors != null && (
         <ul>

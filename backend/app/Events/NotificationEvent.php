@@ -14,15 +14,17 @@ class NotificationEvent implements ShouldBroadcast
 
     public $message;
     public $userId;
+    public $notification;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($message, $userId)
+    public function __construct($message, $userId, $notification)
     {
         $this->message = $message;
         $this->userId = $userId;
+        $this->notification = $notification;
     }
 
     /**

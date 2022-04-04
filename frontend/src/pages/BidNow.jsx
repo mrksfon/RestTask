@@ -10,7 +10,7 @@ import ItemBidHistoryModal from "../components/layout/ItemBidHistoryModal";
 const BidNow = () => {
   const { id } = useParams();
 
-  const { token, user, isAdmin } = useAuth();
+  const { token, user, isAdmin, setNotificationCount } = useAuth();
 
   const [item, setItem] = useState({});
   const [bidErrors, setBidErrors] = useState(null);
@@ -101,6 +101,12 @@ const BidNow = () => {
         setMessage(data.data.message);
       }
       if (
+        data.data.hasOwnProperty("not_enough_funds") &&
+        user.id == data.data.not_enough_funds
+      ) {
+        setMessage(data.data.not_enough_funds);
+      }
+      if (
         data.data.hasOwnProperty("item_bidding_history") &&
         user.id == data.data.item_bidding_history.user_id
       ) {
@@ -121,6 +127,14 @@ const BidNow = () => {
           data.data.item_bidding_history,
         ]);
       }
+    });
+
+    let userChannel = pusher.subscribe(`user_${user.id}`);
+
+    userChannel.bind(`user_${user.id}`, (data) => {
+      setNotificationCount(
+        (prevNotificationCount) => prevNotificationCount + 1
+      );
     });
   }, []);
 

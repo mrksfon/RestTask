@@ -6,6 +6,7 @@ use App\Http\Controllers\AutoBidController;
 use App\Http\Controllers\BidController;
 use App\Http\Controllers\ItemBiddingHistoryController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\UserNotificationsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/settings/{id}', [SettingsController::class, 'update']);
     Route::post('/auto_bid', [AutoBidController::class, 'store']);
     Route::post('/auto_bid/users/{id}', [AutoBidController::class, 'update']);
+    Route::get('/notifications/{id}', [UserNotificationsController::class, 'index_user']);
 
 
 

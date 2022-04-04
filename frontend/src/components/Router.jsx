@@ -9,9 +9,9 @@ import {
   HOME_PAGE,
   LOGIN_PAGE,
   SHOW_AUCTION_ITEM,
+  NOTIFICATIONS,
 } from "../constants/routes";
 import useAuth from "../hooks/useAuth";
-import AuctionItemShow from "../pages/AuctionItemShow";
 import BidNow from "../pages/BidNow";
 import Configuration from "../pages/Configuration";
 import CreateAuctionItem from "../pages/CreateAuctionItem";
@@ -20,6 +20,7 @@ import EditAuctionItem from "../pages/EditAuctionItem";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Nomatch from "../pages/Nomatch";
+import Notifications from "../pages/Notifications";
 
 const ProtectedRoute = ({ children }) => {
   const { token } = useAuth();
@@ -78,6 +79,14 @@ const Router = () => {
         element={
           <ProtectedRoute>
             <BidNow />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={NOTIFICATIONS}
+        element={
+          <ProtectedRoute>
+            <Notifications />
           </ProtectedRoute>
         }
       />

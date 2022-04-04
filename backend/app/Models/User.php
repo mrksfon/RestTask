@@ -25,6 +25,7 @@ class User extends Authenticatable
         'is_admin',
         'email',
         'password',
+        'account'
     ];
 
     /**
@@ -49,5 +50,10 @@ class User extends Authenticatable
     public function settings()
     {
         return $this->hasOne(Settings::class);
+    }
+
+    public function user_notifications()
+    {
+        return $this->hasMany(UserNotifications::class, 'user_id');
     }
 }

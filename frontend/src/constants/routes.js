@@ -5,3 +5,4 @@ export const CREATE_AUCTION_ITEM = "/auction_item/create";
 export const EDIT_AUCTION_ITEM = "/auction_item/:id/edit";
 export const CONFIGURATION = "/configuration";
 export const SHOW_AUCTION_ITEM = "/auction_item/:id";
+export const NOTIFICATIONS = "/notifications";

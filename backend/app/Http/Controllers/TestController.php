@@ -14,38 +14,15 @@ class TestController extends Controller
 {
     public function index()
     {
-        $user = User::findOrFail(1);
+        $latestItem = ItemBiddingHistory::where('auction_item_id', 8)->latest()->first();
 
-        for ($i = 0; $i < 3; $i++) {
-            $notification = UserNotifications::where('user_id', 1)->where('auction_item_id', 1)->where('type', 1)->get()->first();
+        $user = User::findOrFail(28);
 
-            $message = "You have crossed the limit of " . $user->settings->bid_alert_notification . "%";
+        $newAMount = $user->account - $latestItem->bid_amount;
 
-            $tekst = "";
 
-            if ($notification == null) {
-                UserNotifications::create([
-                    'user_id' => 1,
-                    'auction_item_id' => 1,
-                    'type' => 1,
-                    'sent_notification' => 1,
-                    'message' => $message
-                ]);
-                // NotificationEvent::dispatch($message, $this->userId);
-            } else {
+        $user->update(['account' => $newAMount]);
 
-                if ($notification->sent_notification == 0) {
-                    dd('ulazi ovde sad sta ne razumem', $i);
-                    $notification->update([
-                        'user_id' => 1,
-                        'auction_item_id' => 1,
-                        'type' => 1,
-                        'sent_notification' => 1,
-                        'message' => $message
-                    ]);
-                    // NotificationEvent::dispatch($message, $this->userId);
-                }
-            }
-        }
+        dd($user);
     }
 }

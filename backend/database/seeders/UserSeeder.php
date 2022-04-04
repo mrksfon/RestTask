@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        $users = User::factory()->count(30)->create();
+        $users = User::factory()->count(200)->create();
 
         foreach ($users as $user) {
             Settings::create(['user_id' => $user->id, 'maximum_bid_amount' => 0, 'bid_alert_notification' => 0]);

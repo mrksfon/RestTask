@@ -52,6 +52,15 @@ class BidJob implements ShouldQueue, ShouldBeUnique
 
         if (now() >= Carbon::parse($auctionItem->auction_start)) {
             $auctionItem->update(['is_active' => false]);
+            $user = User::findOrFail($this->userId);
+
+            $latestItem = ItemBiddingHistory::where('auction_item_id', $this->auctionItemId)->latest()->first();
+
+            $newAmount = $user->account - $latestItem->bid_amount;
+
+            $user->update(['account' => $newAmount]);
+
+
             $autoBids = AutoBid::where('auction_item_id', $this->auctionItemId)->get();
             foreach ($autoBids as $bid) {
                 $bid->update(['is_active' => false]);
@@ -59,6 +68,36 @@ class BidJob implements ShouldQueue, ShouldBeUnique
             $message = [
                 'auction_end' => 'Auction for this item has ended'
             ];
+
+            $items = ItemBiddingHistory::where('auction_item_id', $this->auctionItemId)->where('user_id', '!=', -1)->get()->pluck('user_id')->unique();
+
+            $messageAuctionOver = "The auction for the item " . $auctionItem->name . "IS OVER";
+
+            foreach ($items as $item) {
+                $notification = UserNotifications::where('user_id', $item)->where('auction_item_id', $this->auctionItemId)->where('type', 2)->get()->first();
+
+                if ($notification == null) {
+                    $notification = UserNotifications::create([
+                        'user_id' => $item,
+                        'auction_item_id' => $this->auctionItemId,
+                        'type' => 2,
+                        'sent_notification' => 1,
+                        'message' => $messageAuctionOver
+                    ]);
+                    NotificationEvent::dispatch($message, $item, $notification);
+                } else {
+                    if ($notification->sent_notification == 0) {
+                        $notification->update([
+                            'user_id' => $item,
+                            'auction_item_id' => $this->auctionItemId,
+                            'type' => 2,
+                            'sent_notification' => 1,
+                            'message' => $messageAuctionOver
+                        ]);
+                        NotificationEvent::dispatch($message, $item, $notification);
+                    }
+                }
+            }
         } else {
             $itemBidHistoryCurrent = ItemBiddingHistory::where('auction_item_id', $this->auctionItemId)->latest()->first();
 
@@ -98,13 +137,30 @@ class BidJob implements ShouldQueue, ShouldBeUnique
                         ];
                     }
                 } else {
-                    $itemBidHistoryUser = ItemBiddingHistory::create(['auction_item_id' => $this->auctionItemId, 'user_id' => $this->userId, 'bid_amount' => $newBidAmount]);
 
-                    $message = [
-                        'item_bidding_history' => $itemBidHistoryUser,
-                        'user' => $itemBidHistoryUser->user,
-                        'request_type' => $this->requestType
-                    ];
+                    $user = User::findOrFail($this->userId);
+                    $items = ItemBiddingHistory::where('user_id', $this->userId)->get()->pluck('auction_item_id')->unique();
+
+                    $auctionItems = AuctionItem::where('is_active', 0)->whereIn('id', $items)->get()->pluck('id');
+
+                    $sum = 0;
+                    foreach ($auctionItems as $item) {
+                        $sum += ItemBiddingHistory::where('user_id', $this->userId)->where('auction_item_id', $item)->get()->max('bid_amount');
+                    }
+
+                    if ($user->account <= $sum) {
+                        $message = [
+                            'not_enough_funds' => 'You currently do not have enought funds on your account.'
+                        ];
+                    } else {
+                        $itemBidHistoryUser = ItemBiddingHistory::create(['auction_item_id' => $this->auctionItemId, 'user_id' => $this->userId, 'bid_amount' => $newBidAmount]);
+
+                        $message = [
+                            'item_bidding_history' => $itemBidHistoryUser,
+                            'user' => $itemBidHistoryUser->user,
+                            'request_type' => $this->requestType
+                        ];
+                    }
                 }
             }
         }
@@ -117,8 +173,10 @@ class BidJob implements ShouldQueue, ShouldBeUnique
         $user = User::findOrFail($this->userId);
         $items = ItemBiddingHistory::where('user_id', $this->userId)->get()->pluck('auction_item_id')->unique();
 
+        $auctionItems = AuctionItem::where('is_active', true)->whereIn('id', $items)->get()->pluck('id');
+
         $sum = 0;
-        foreach ($items as $item) {
+        foreach ($auctionItems as $item) {
             $sum += ItemBiddingHistory::where('user_id', $this->userId)->where('auction_item_id', $item)->get()->max('bid_amount');
         }
 
@@ -138,17 +196,19 @@ class BidJob implements ShouldQueue, ShouldBeUnique
         if ($sum >= $calculatedBid) {
             $notification = UserNotifications::where('user_id', $this->userId)->where('auction_item_id', $this->auctionItemId)->where('type', 1)->get()->first();
 
-            $message = "You have crossed the limit of " . $user->settings->bid_alert_notification . "%";
+            $auctionItem = AuctionItem::findOrFail($this->auctionItemId);
+
+            $message = "You have crossed the limit of " . $user->settings->bid_alert_notification . "% for " . $auctionItem->name;
 
             if ($notification == null) {
-                UserNotifications::create([
+                $notification = UserNotifications::create([
                     'user_id' => $this->userId,
                     'auction_item_id' => $this->auctionItemId,
                     'type' => 1,
                     'sent_notification' => 1,
                     'message' => $message
                 ]);
-                NotificationEvent::dispatch($message, $this->userId);
+                NotificationEvent::dispatch($message, $this->userId, $notification);
             } else {
                 if ($notification->sent_notification == 0) {
                     $notification->update([
@@ -158,7 +218,7 @@ class BidJob implements ShouldQueue, ShouldBeUnique
                         'sent_notification' => 1,
                         'message' => $message
                     ]);
-                    NotificationEvent::dispatch($message, $this->userId);
+                    NotificationEvent::dispatch($message, $this->userId, $notification);
                 }
             }
         }

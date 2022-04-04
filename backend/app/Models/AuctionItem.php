@@ -17,6 +17,7 @@ class AuctionItem extends Model
         'name',
         'description',
         'auction_start',
+        'is_active'
     ];
     protected $appends = ['formatted_date'];
 

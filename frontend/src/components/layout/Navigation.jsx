@@ -6,11 +6,12 @@ import {
   DASHBOARD,
   HOME_PAGE,
   LOGIN_PAGE,
+  NOTIFICATIONS,
 } from "../../constants/routes";
 import useAuth from "../../hooks/useAuth";
 
 const Navigation = () => {
-  const { token, onLogout, isAdmin } = useAuth();
+  const { token, onLogout, isAdmin, notificationCount } = useAuth();
   return (
     <>
       <Navbar bg="light" variant="light">
@@ -58,6 +59,19 @@ const Navigation = () => {
                     }}
                   >
                     Settings
+                  </NavLink>
+                </Navbar.Brand>
+
+                <Navbar.Brand>
+                  <NavLink
+                    to={NOTIFICATIONS}
+                    style={{
+                      textDecoration: "none",
+                      color: "black",
+                      marginLeft: "3px",
+                    }}
+                  >
+                    Notifications {notificationCount}
                   </NavLink>
                 </Navbar.Brand>
 
