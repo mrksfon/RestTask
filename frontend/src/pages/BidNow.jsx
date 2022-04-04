@@ -34,7 +34,6 @@ const BidNow = () => {
           config
         );
         setBidErrors(null);
-        console.log(response.data.is_active);
         setItem(response.data);
         setTimeLeft(response.data.formatted_date);
         setAuctionStatus(response.data.is_active);
@@ -78,7 +77,6 @@ const BidNow = () => {
         );
 
         setAutoBid(response.data.is_active);
-        // console.log(response.data);
       } catch (err) {}
     };
 
@@ -87,7 +85,7 @@ const BidNow = () => {
     fetchBidHistoryData();
     fetchAutoBidData();
 
-    const pusher = new Pusher("1a439697d7e76e04d5eb", {
+    const pusher = new Pusher("7d6ecbfcd70311ae6027", {
       cluster: "eu",
     });
 
@@ -128,8 +126,6 @@ const BidNow = () => {
 
   const handleBid = async () => {
     const requestType = autoBid ? "1" : "2";
-
-    // console.log(requestType);
     try {
       const response = await axios.post(
         "http://127.0.0.1:8000/api/bid",
@@ -140,6 +136,7 @@ const BidNow = () => {
         },
         config
       );
+      console.log(response.data);
     } catch (err) {}
   };
 
@@ -153,7 +150,6 @@ const BidNow = () => {
         },
         config
       );
-      console.log(response.data);
       setAutoBid(response.data.is_active);
     } catch (err) {}
   };

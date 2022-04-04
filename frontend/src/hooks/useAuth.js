@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const [token, setToken] = useState(null);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
   const [isAdmin, setIsAdmin] = useState(false);
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
