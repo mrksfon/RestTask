@@ -6,13 +6,17 @@ git clone https://github.com/mrksfon/RestTask.git
 
 ## Front end part
 
-navigate to frontend folder - on ubuntu cd frontend
+open terminal
 
-run : npm i && npm start - and you are all done with frontend
+navigate to frontend folder - on ubuntu cd frontend/
+
+run : npm i && npm start - in root of your frontend folder and you are all done with frontend
 
 ## Back end part
 
-navigate to backend folder - on ubuntu cd backend
+open terminal
+
+navigate to backend folder - on ubuntu cd backend/
 
 run : composer install
 
