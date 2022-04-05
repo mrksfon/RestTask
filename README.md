@@ -26,44 +26,44 @@ copy the .env.example file - on ubuntu cp .env.example > .env
 
 configure the .env file
 
-APP_NAME=Laravel
-APP_ENV=local
-APP_KEY=
-APP_DEBUG=true
-APP_URL=http://localhost
+APP_NAME=Laravel <br/>
+APP_ENV=local <br/>
+APP_KEY= <br/>
+APP_DEBUG=true <br/>
+APP_URL=http://localhost<br/>
 
-LOG_CHANNEL=stack
-LOG_DEPRECATIONS_CHANNEL=null
-LOG_LEVEL=debug
+LOG_CHANNEL=stack <br/>
+LOG_DEPRECATIONS_CHANNEL=null <br/>
+LOG_LEVEL=debug <br/>
 
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE={your_database_name}
-DB_USERNAME={your_user}
-DB_PASSWORD={your_password_if_you_have_one}
+DB_CONNECTION=mysql <br/>
+DB_HOST=127.0.0.1 <br/>
+DB_PORT=3306 <br/>
+DB_DATABASE={your_database_name} <br/>
+DB_USERNAME={your_user} <br/>
+DB_PASSWORD={your_password_if_you_have_one} <br/>
 
-BROADCAST_DRIVER=pusher
-CACHE_DRIVER=file
-FILESYSTEM_DRIVER=local
-QUEUE_CONNECTION=database
-SESSION_DRIVER=file
-SESSION_LIFETIME=120
+BROADCAST_DRIVER=pusher <br/>
+CACHE_DRIVER=file <br/>
+FILESYSTEM_DRIVER=local <br/>
+QUEUE_CONNECTION=database <br/>
+SESSION_DRIVER=file <br/>
+SESSION_LIFETIME=120<br/>
 
-MEMCACHED_HOST=127.0.0.1
+MEMCACHED_HOST=127.0.0.1<br/>
 
-REDIS_HOST=127.0.0.1
-REDIS_PASSWORD=null
-REDIS_PORT=6379
+REDIS_HOST=127.0.0.1<br/>
+REDIS_PASSWORD=null<br/>
+REDIS_PORT=6379<br/>
 
-MAIL_MAILER=smtp
-MAIL_HOST=mailhog
-MAIL_PORT=1025
-MAIL_USERNAME=null
-MAIL_PASSWORD=null
-MAIL_ENCRYPTION=null
-MAIL_FROM_ADDRESS=null
-MAIL_FROM_NAME="${APP_NAME}"
+MAIL_MAILER=smtp<br/>
+MAIL_HOST=mailhog<br/>
+MAIL_PORT=1025<br/>
+MAIL_USERNAME=null<br/>
+MAIL_PASSWORD=null<br/>
+MAIL_ENCRYPTION=null<br/>
+MAIL_FROM_ADDRESS=null<br/>
+MAIL_FROM_NAME="${APP_NAME}"<br/>
 
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
