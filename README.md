@@ -22,6 +22,8 @@ navigate to backend folder - on ubuntu cd backend/
 
 run : composer install
 
+create your local database which we will use later in .env file
+
 copy the .env.example file - on ubuntu cp .env.example > .env
 
 configure the .env file
