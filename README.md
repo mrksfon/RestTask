@@ -4,6 +4,8 @@
 
 git clone https://github.com/mrksfon/RestTask.git
 
+run : cd RestTask/
+
 ## Front end part
 
 open terminal
