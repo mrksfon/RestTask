@@ -11,7 +11,9 @@ class Settings extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'settings';
+
     public $timestamps = true;
+
     protected $fillable = [
         'user_id',
         'maximum_bid_amount',

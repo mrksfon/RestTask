@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import useAuth, { AuthProvider } from "./hooks/useAuth";
+import React from "react";
+import { AuthProvider } from "./hooks/useAuth";
 import Navigation from "./components/layout/Navigation";
 import Router from "./components/Router";
 

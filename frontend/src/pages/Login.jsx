@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, Container, Form } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
 const Login = () => {

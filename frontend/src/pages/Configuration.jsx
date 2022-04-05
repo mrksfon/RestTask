@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import useAuth from "../hooks/useAuth";
+import * as yup from "yup";
 
 const Configuration = () => {
   const { token, user, navigate, setBidAmount, setAlertNotification } =
@@ -9,7 +10,8 @@ const Configuration = () => {
 
   const [maximumBidAmount, setMaximumBidAmount] = useState(0);
   const [bidAlertNotification, setBidAlertNotification] = useState(0);
-  const [bidErrors, setBidErrors] = useState(null);
+  const [bidErrors, setBidErrors] = useState("");
+  const [alertErrors, setAlertErrors] = useState("");
 
   const config = {
     headers: { Authorization: `Bearer ${token}` },
@@ -27,10 +29,7 @@ const Configuration = () => {
         // console.log(data);
         setMaximumBidAmount(data.maximum_bid_amount);
         setBidAlertNotification(data.bid_alert_notification);
-        setBidErrors(null);
-      } catch (err) {
-        setBidErrors(err.response.data);
-      }
+      } catch (err) {}
     };
     fetchData();
   }, []);
@@ -50,22 +49,31 @@ const Configuration = () => {
         },
         config
       );
-      setBidErrors(null);
       setBidAmount(maximumBidAmount);
       setAlertNotification(bidAlertNotification);
+
       navigate("/dashboard");
-    } catch (err) {
-      // console.log(err.response);
-      setBidErrors(err.response.data);
-    }
+    } catch (err) {}
   };
 
   const handleChangeMaximumBidAmount = (e) => {
-    setMaximumBidAmount(e.target.value);
+    const newBidAMount = e.target.value;
+    if (newBidAMount < 0 || newBidAMount > user.account) {
+      setBidErrors(`Bid must be in range of 0 and ${user.account} `);
+      return;
+    }
+    setBidErrors("");
+    setMaximumBidAmount(newBidAMount);
   };
 
   const handleChangeBidAlertNotification = (e) => {
-    setBidAlertNotification(e.target.value);
+    const newAlertBid = e.target.value;
+    if (newAlertBid < 0 || newAlertBid > 100) {
+      setAlertErrors(`Alert bid notification must be between 0 and 100`);
+      return;
+    }
+    setBidAlertNotification(newAlertBid);
+    setAlertErrors("");
   };
 
   return (
@@ -94,16 +102,10 @@ const Configuration = () => {
         <Button variant="primary" type="button" onClick={handleSubmit}>
           Save
         </Button>
-        {bidErrors != null && (
-          <ul>
-            {Object.keys(bidErrors.errors).map((error, index) => (
-              <li style={{ color: "red" }} key={index}>
-                {bidErrors.errors[error][0]}
-              </li>
-            ))}
-          </ul>
-        )}
       </Form>
+      {bidErrors}
+      <br />
+      {alertErrors}
     </Container>
   );
 };

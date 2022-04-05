@@ -1,5 +1,3 @@
-import React from "react";
-
 export const tableHeaders = [
   {
     Header: "Name",
@@ -14,3 +12,5 @@ export const tableHeaders = [
     accessor: "auction_start",
   },
 ];
+
+export const API_KEY = "7d6ecbfcd70311ae6027";

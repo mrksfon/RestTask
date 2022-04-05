@@ -1,27 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import AlertNotification from "../components/layout/AlertNotification";
 import AuctionItemsTable from "../components/layout/AuctionItemsTable";
 import useAuth from "../hooks/useAuth";
-import Pusher from "pusher-js";
-import { ToastContainer } from "react-bootstrap";
 
 const Dashboard = () => {
-  const {
-    token,
-    setLoginErrors,
-    loginErrors,
-    user,
-    setBidAmount,
-    setAlertNotification,
-    setNotificationCount,
-  } = useAuth();
-
-  const [userChannel, setUserChannel] = useState("");
-  const [message, setMessage] = useState(null);
-  const [show, setShow] = useState(false);
+  const { token, user, setBidAmount, setAlertNotification } = useAuth();
 
   const [auctionItems, setAuctionItems] = useState([]);
+  const [dashboardErrors, setDashboardErrors] = useState(null);
 
   const config = {
     headers: { Authorization: `Bearer ${token}` },
@@ -34,13 +20,10 @@ const Dashboard = () => {
           "http://127.0.0.1:8000/api/auction_items",
           config
         );
-        // console.log(response);
-        setLoginErrors(null);
-        // console.log(response);
+        setDashboardErrors(null);
         setAuctionItems(response.data);
       } catch (err) {
-        // console.log(err.response);
-        setLoginErrors(err.response.data);
+        setDashboardErrors(err.response.data);
       }
     };
 
@@ -52,13 +35,9 @@ const Dashboard = () => {
         );
 
         const { data } = response;
-        // console.log(data);
         setBidAmount(data.maximum_bid_amount);
         setAlertNotification(data.bid_alert_notification);
-        // setBidErrors(null);
-      } catch (err) {
-        // setBidErrors(err.response.data);
-      }
+      } catch (err) {}
     };
 
     fetchData();
@@ -67,13 +46,12 @@ const Dashboard = () => {
 
   return (
     <>
-      {message != null && <AlertNotification />}
       <AuctionItemsTable auctionItems={auctionItems} />
-      {loginErrors != null && (
+      {dashboardErrors != null && (
         <ul>
-          {Object.keys(loginErrors.errors).map((error, index) => (
+          {Object.keys(dashboardErrors.errors).map((error, index) => (
             <li style={{ color: "red" }} key={index}>
-              {loginErrors.errors[error][0]}
+              {dashboardErrors.errors[error][0]}
             </li>
           ))}
         </ul>

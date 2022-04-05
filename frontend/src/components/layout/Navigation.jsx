@@ -1,5 +1,5 @@
 import { Container, Nav, Navbar, Button } from "react-bootstrap";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   CONFIGURATION,
   CREATE_AUCTION_ITEM,

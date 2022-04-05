@@ -8,7 +8,8 @@ const CreateAuctionItem = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [time, setTime] = useState("");
-  const { token, loginErrors, setLoginErrors, navigate } = useAuth();
+  const { token, navigate } = useAuth();
+  const [createItemErrors, setCreateItemErrors] = useState(null);
 
   const handleChangeName = (e) => {
     setName(e.target.value);
@@ -37,11 +38,10 @@ const CreateAuctionItem = () => {
         },
         config
       );
-      setLoginErrors(null);
+      setCreateItemErrors(null);
       navigate("/dashboard");
     } catch (err) {
-      // console.log(err.response);
-      setLoginErrors(err.response.data);
+      setCreateItemErrors(err.response.data);
     }
   };
 
@@ -83,11 +83,11 @@ const CreateAuctionItem = () => {
           <Button variant="primary" type="button" onClick={handleSubmit}>
             Save
           </Button>
-          {loginErrors != null && (
+          {createItemErrors != null && (
             <ul>
-              {Object.keys(loginErrors.errors).map((error, index) => (
+              {Object.keys(createItemErrors.errors).map((error, index) => (
                 <li style={{ color: "red" }} key={index}>
-                  {loginErrors.errors[error][0]}
+                  {createItemErrors.errors[error][0]}
                 </li>
               ))}
             </ul>

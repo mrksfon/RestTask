@@ -1,4 +1,3 @@
-import { useTable } from "react-table";
 import React from "react";
 import { Container } from "react-bootstrap";
 import { tableHeaders } from "../../constants/helpers";

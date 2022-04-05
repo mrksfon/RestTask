@@ -24,10 +24,7 @@ const Notifications = () => {
         setNotifications(response.data);
         setNotificationErrors(null);
         setNotificationCount(0);
-        // console.log(data);
-      } catch (err) {
-        // setBidErrors(err.response.data);
-      }
+      } catch (err) {}
     };
     fetchData();
   }, []);
@@ -46,5 +43,3 @@ const Notifications = () => {
 };
 
 export default Notifications;
-
-// {auctionStatus === true ? "Current Bid" : "Last bid"} :{" "}

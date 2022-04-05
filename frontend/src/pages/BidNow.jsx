@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import Pusher from "pusher-js";
 import ItemBidHistoryModal from "../components/layout/ItemBidHistoryModal";
+import { API_KEY } from "../constants/helpers";
 
 const BidNow = () => {
   const { id } = useParams();
@@ -85,14 +86,13 @@ const BidNow = () => {
     fetchBidHistoryData();
     fetchAutoBidData();
 
-    const pusher = new Pusher("7d6ecbfcd70311ae6027", {
+    const pusher = new Pusher(API_KEY, {
       cluster: "eu",
     });
 
     let channel = pusher.subscribe(`auction_item_${id}`);
 
     channel.bind(`auction_item_${id}`, (data) => {
-      console.log(data);
       if (data.data.hasOwnProperty("auction_end")) {
         setMessage(data.data.auction_end);
         setAuctionStatus(false);
@@ -150,7 +150,6 @@ const BidNow = () => {
         },
         config
       );
-      console.log(response.data);
     } catch (err) {}
   };
 
