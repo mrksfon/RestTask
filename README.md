@@ -90,3 +90,8 @@ open your terminal in root of backend folder
 run : php artisan serve - to start api
 
 run : php artisan queue:work - to start queue
+
+There are 10 regular users and 10 admin users
+
+regular users user1@example.com,user2@example.com .... $user10@example.com - password is same for all : admin1
+admin users admin1@example.com,admin@example.com ... $admin10@example.com - paswword is same for all : admin1
