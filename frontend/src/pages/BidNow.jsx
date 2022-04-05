@@ -184,7 +184,7 @@ const BidNow = () => {
             </Card.Text>
 
             <Row>
-              {auctionStatus === 1 && (
+              {auctionStatus === 1 && isAdmin === 0 && (
                 <Col>
                   <Button
                     variant="primary"
@@ -203,7 +203,7 @@ const BidNow = () => {
                   {currentBidAmount} $
                 </Card.Text>
               </Col>
-              {auctionStatus === 1 && (
+              {auctionStatus === 1 && isAdmin === 0 && (
                 <>
                   <Col>
                     <Card.Text>

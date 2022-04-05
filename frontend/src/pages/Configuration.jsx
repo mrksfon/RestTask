@@ -2,7 +2,6 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import useAuth from "../hooks/useAuth";
-import * as yup from "yup";
 
 const Configuration = () => {
   const { token, user, navigate, setBidAmount, setAlertNotification } =

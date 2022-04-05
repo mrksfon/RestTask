@@ -77,6 +77,8 @@ export const AuthProvider = ({ children }) => {
     notificationCount,
     setNotificationCount,
     setAlertNotification,
+    email,
+    password,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

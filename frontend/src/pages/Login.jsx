@@ -3,7 +3,8 @@ import { Button, Container, Form } from "react-bootstrap";
 import useAuth from "../hooks/useAuth";
 
 const Login = () => {
-  const { onLogin, setEmail, setPassword, loginErrors } = useAuth();
+  const { onLogin, setEmail, setPassword, loginErrors, password, email } =
+    useAuth();
 
   const handleChangeEmail = (e) => {
     setEmail(e.target.value);
@@ -23,7 +24,9 @@ const Login = () => {
               type="email"
               placeholder="Enter email"
               onChange={handleChangeEmail}
+              value={email}
               required={true}
+              autoComplete
             />
           </Form.Group>
 
@@ -33,6 +36,7 @@ const Login = () => {
               type="password"
               placeholder="Password"
               onChange={handleChangePassword}
+              value={password}
               required={true}
             />
           </Form.Group>
